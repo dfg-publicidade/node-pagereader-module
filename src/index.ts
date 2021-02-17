@@ -11,9 +11,9 @@ class PageReader {
         const browser: Browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page: Page = await browser.newPage();
 
-        const url: string = req.protocol + '://' + req.headers.host + req.originalUrl;
+        const url: string = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
 
-        debug('Searching for: ' + url);
+        debug(`Searching for: ${url}`);
 
         await page.goto(url);
 

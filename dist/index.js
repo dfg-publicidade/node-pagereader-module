@@ -11,8 +11,8 @@ class PageReader {
     static async getMetaData(req) {
         const browser = await puppeteer_1.default.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
-        const url = req.protocol + '://' + req.headers.host + req.originalUrl;
-        debug('Searching for: ' + url);
+        const url = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
+        debug(`Searching for: ${url}`);
         await page.goto(url);
         debug('Page found. Reading...');
         await page.waitForSelector('head > title');
