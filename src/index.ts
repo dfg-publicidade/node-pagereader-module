@@ -9,7 +9,7 @@ const debug: appDebugger.IDebugger = appDebugger('module:page-reader');
 class PageReader {
     public static async getMetaData(req: Request): Promise<MetaData> {
         if (!req || !req.protocol || !req.headers.host) {
-            return Promise.reject(new Error('Invalid request to get data.'))
+            return Promise.reject(new Error('Invalid request to get data.'));
         }
 
         const browser: Browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });

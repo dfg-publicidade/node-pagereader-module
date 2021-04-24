@@ -9,62 +9,58 @@ const puppeteer_1 = __importDefault(require("puppeteer"));
 const debug = debug_1.default('module:page-reader');
 class PageReader {
     static async getMetaData(req) {
+        if (!req || !req.protocol || !req.headers.host) {
+            return Promise.reject(new Error('Invalid request to get data.'));
+        }
         const browser = await puppeteer_1.default.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         const url = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
         debug(`Searching for: ${url}`);
         await page.goto(url);
         debug('Page found. Reading...');
-        await page.waitForSelector('head > title');
+        await page.waitForSelector('head>title');
         debug('Reading content...');
         const pageTitle = await page.title();
         let description;
         try {
-            description = await page.$eval('head > meta[name="description"]', (meta) => meta.content);
+            /* istanbul ignore next */
+            description = await page.$eval('head>meta[name="description"]', (meta) => meta.content);
         }
         catch (err) {
-            debug('Meta description not found');
+            debug(err.message);
         }
         let author;
         try {
-            author = await page.$eval('head > meta[name="author"]', (meta) => meta.content);
+            /* istanbul ignore next */
+            author = await page.$eval('head>meta[name="author"]', (meta) => meta.content);
         }
         catch (err) {
-            debug('Meta author not found');
+            debug(err.message);
         }
         let keywords;
         try {
-            keywords = await page.$eval('head > meta[name="keywords"]', (meta) => meta.content);
+            /* istanbul ignore next */
+            keywords = await page.$eval('head>meta[name="keywords"]', (meta) => meta.content);
         }
         catch (err) {
-            debug('Meta keywords not found');
+            debug(err.message);
         }
-        let ogMetas = [];
-        try {
-            ogMetas = await page.$$eval('head > meta[property^="og:"]', (metas) => metas.map((meta) => ({
-                name: meta.getAttribute('property'),
-                value: meta.content
-            })));
-        }
-        catch (err) {
-            debug('Meta og not found');
-        }
+        /* istanbul ignore next */
+        const ogMetas = await page.$$eval('head>meta[property^="og:"]', (metas) => metas.map((meta) => ({
+            name: meta.getAttribute('property'),
+            value: meta.content
+        })));
         let ogImage;
         for (const meta of ogMetas) {
             if (meta.name === 'og:image') {
                 ogImage = meta.value;
             }
         }
-        let twitterMetas = [];
-        try {
-            twitterMetas = await page.$$eval('head > meta[property^="twitter:"]', (metas) => metas.map((meta) => ({
-                name: meta.getAttribute('property'),
-                value: meta.content
-            })));
-        }
-        catch (err) {
-            debug('Meta twitter not found');
-        }
+        /* istanbul ignore next */
+        const twitterMetas = await page.$$eval('head>meta[property^="twitter:"]', (metas) => metas.map((meta) => ({
+            name: meta.getAttribute('property'),
+            value: meta.content
+        })));
         browser.close();
         return Promise.resolve({
             pageTitle, description, author, keywords, ogImage, ogMetas, twitterMetas
