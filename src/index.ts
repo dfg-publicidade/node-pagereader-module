@@ -8,6 +8,10 @@ const debug: appDebugger.IDebugger = appDebugger('module:page-reader');
 
 class PageReader {
     public static async getMetaData(req: Request): Promise<MetaData> {
+        if (!req || !req.protocol || !req.headers.host) {
+            return Promise.reject(new Error('Invalid request to get data.'))
+        }
+        
         const browser: Browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page: Page = await browser.newPage();
 
@@ -19,7 +23,7 @@ class PageReader {
 
         debug('Page found. Reading...');
 
-        await page.waitForSelector('head > title');
+        await page.waitForSelector('head>title');
 
         debug('Reading content...');
 
@@ -27,38 +31,36 @@ class PageReader {
 
         let description: string;
         try {
-            description = await page.$eval('head > meta[name="description"]', (meta: any): any => meta.content);
+            /* istanbul ignore next */
+            description = await page.$eval('head>meta[name="description"]', (meta: any): any => meta.content);
         }
         catch (err: any) {
-            debug('Meta description not found');
+            debug(err.message);
         }
 
         let author: string;
         try {
-            author = await page.$eval('head > meta[name="author"]', (meta: any): any => meta.content);
+            /* istanbul ignore next */
+            author = await page.$eval('head>meta[name="author"]', (meta: any): any => meta.content);
         }
         catch (err: any) {
-            debug('Meta author not found');
+            debug(err.message);
         }
 
         let keywords: string;
         try {
-            keywords = await page.$eval('head > meta[name="keywords"]', (meta: any): any => meta.content);
+            /* istanbul ignore next */
+            keywords = await page.$eval('head>meta[name="keywords"]', (meta: any): any => meta.content);
         }
         catch (err: any) {
-            debug('Meta keywords not found');
+            debug(err.message);
         }
 
-        let ogMetas: any[] = [];
-        try {
-            ogMetas = await page.$$eval('head > meta[property^="og:"]', (metas: any): any => metas.map((meta: any): any => ({
-                name: meta.getAttribute('property'),
-                value: meta.content
-            })));
-        }
-        catch (err: any) {
-            debug('Meta og not found');
-        }
+        /* istanbul ignore next */
+        const ogMetas: any[] = await page.$$eval('head>meta[property^="og:"]', (metas: any): any => metas.map((meta: any): any => ({
+            name: meta.getAttribute('property'),
+            value: meta.content
+        })));
 
         let ogImage: string;
         for (const meta of ogMetas) {
@@ -67,16 +69,11 @@ class PageReader {
             }
         }
 
-        let twitterMetas: any[] = [];
-        try {
-            twitterMetas = await page.$$eval('head > meta[property^="twitter:"]', (metas: any): any => metas.map((meta: any): any => ({
-                name: meta.getAttribute('property'),
-                value: meta.content
-            })));
-        }
-        catch (err: any) {
-            debug('Meta twitter not found');
-        }
+        /* istanbul ignore next */
+        const twitterMetas: any[] = await page.$$eval('head>meta[property^="twitter:"]', (metas: any): any => metas.map((meta: any): any => ({
+            name: meta.getAttribute('property'),
+            value: meta.content
+        })));
 
         browser.close();
 
