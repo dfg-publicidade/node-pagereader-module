@@ -11,7 +11,7 @@ class PageReader {
         if (!req || !req.protocol || !req.headers.host) {
             return Promise.reject(new Error('Invalid request to get data.'))
         }
-        
+
         const browser: Browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page: Page = await browser.newPage();
 
