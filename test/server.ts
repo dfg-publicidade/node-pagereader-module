@@ -1,20 +1,17 @@
 import express, { Express, Request, Response } from 'express';
 import fs from 'fs-extra';
 import http from 'http';
-import ChaiHttp = require('chai-http');
 
-let exp: Express;
-let httpServer: http.Server;
-
-exp = express();
+const exp: Express = express();
 const port: number = 3000;
 
 exp.set('port', port);
 
-httpServer = http.createServer(exp);
+const httpServer: http.Server = http.createServer(exp);
 
 exp.get('/with-meta', async (req: Request, res: Response): Promise<void> => {
     res.header({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': 'text/html'
     });
     res.write(fs.readFileSync(__dirname + '/with-meta.html', 'utf-8'));
@@ -23,6 +20,7 @@ exp.get('/with-meta', async (req: Request, res: Response): Promise<void> => {
 
 exp.get('/without-meta', async (req: Request, res: Response): Promise<void> => {
     res.header({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': 'text/html'
     });
     res.write(fs.readFileSync(__dirname + '/without-meta.html', 'utf-8'));
@@ -31,6 +29,7 @@ exp.get('/without-meta', async (req: Request, res: Response): Promise<void> => {
 
 httpServer.on('listening', (): void => {
     const addr: any = httpServer.address();
+    // eslint-disable-next-line no-console
     console.log(`Ouvindo ${addr.port}`);
 });
 
