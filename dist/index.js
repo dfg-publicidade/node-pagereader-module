@@ -14,53 +14,62 @@ class PageReader {
         }
         const browser = await puppeteer_1.default.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
-        const url = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
-        debug(`Searching for: ${url}`);
-        await page.goto(url);
-        debug('Page found. Reading...');
-        await page.waitForSelector('head>title');
-        debug('Reading content...');
-        const pageTitle = await page.title();
+        let pageTitle;
         let description;
-        try {
-            /* istanbul ignore next */
-            description = await page.$eval('head>meta[name="description"]', (meta) => meta.content);
-        }
-        catch (err) {
-            debug(err.message);
-        }
         let author;
-        try {
-            /* istanbul ignore next */
-            author = await page.$eval('head>meta[name="author"]', (meta) => meta.content);
-        }
-        catch (err) {
-            debug(err.message);
-        }
         let keywords;
+        let ogMetas;
+        let ogImage;
+        let twitterMetas;
         try {
+            const url = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
+            debug(`Searching for: ${url}`);
+            await page.goto(url);
+            debug('Page found. Reading...');
+            await page.waitForSelector('head>title');
+            debug('Reading content...');
+            pageTitle = await page.title();
+            try {
+                /* istanbul ignore next */
+                description = await page.$eval('head>meta[name="description"]', (meta) => meta.content);
+            }
+            catch (err) {
+                debug(err.message);
+            }
+            try {
+                /* istanbul ignore next */
+                author = await page.$eval('head>meta[name="author"]', (meta) => meta.content);
+            }
+            catch (err) {
+                debug(err.message);
+            }
+            try {
+                /* istanbul ignore next */
+                keywords = await page.$eval('head>meta[name="keywords"]', (meta) => meta.content);
+            }
+            catch (err) {
+                debug(err.message);
+            }
             /* istanbul ignore next */
-            keywords = await page.$eval('head>meta[name="keywords"]', (meta) => meta.content);
+            ogMetas = await page.$$eval('head>meta[property^="og:"]', (metas) => metas.map((meta) => ({
+                name: meta.getAttribute('property'),
+                value: meta.content
+            })));
+            for (const meta of ogMetas) {
+                if (meta.name === 'og:image') {
+                    ogImage = meta.value;
+                }
+            }
+            /* istanbul ignore next */
+            twitterMetas = await page.$$eval('head>meta[property^="twitter:"]', (metas) => metas.map((meta) => ({
+                name: meta.getAttribute('property'),
+                value: meta.content
+            })));
         }
         catch (err) {
             debug(err.message);
         }
-        /* istanbul ignore next */
-        const ogMetas = await page.$$eval('head>meta[property^="og:"]', (metas) => metas.map((meta) => ({
-            name: meta.getAttribute('property'),
-            value: meta.content
-        })));
-        let ogImage;
-        for (const meta of ogMetas) {
-            if (meta.name === 'og:image') {
-                ogImage = meta.value;
-            }
-        }
-        /* istanbul ignore next */
-        const twitterMetas = await page.$$eval('head>meta[property^="twitter:"]', (metas) => metas.map((meta) => ({
-            name: meta.getAttribute('property'),
-            value: meta.content
-        })));
+        page.close();
         browser.close();
         return Promise.resolve({
             pageTitle, description, author, keywords, ogImage, ogMetas, twitterMetas
