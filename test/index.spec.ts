@@ -55,6 +55,21 @@ describe('index.ts', (): void => {
             res.end();
         });
 
+        exp.get('/expect-notfound', async (req: Request, res: Response): Promise<void> => {
+            const metaData: MetaData = await PageReader.getMetaData({
+                ...req,
+                protocol: 'http',
+                headers: {
+                    ...req.headers,
+                    host: 'localhost:4000'
+                },
+                originalUrl: '/without-meta'
+            } as Request);
+
+            res.json(metaData);
+            res.end();
+        });
+
         return new Promise<void>((
             resolve: () => void
         ): void => {
@@ -102,6 +117,15 @@ describe('index.ts', (): void => {
         expect(res.body).to.not.have.property('ogImage');
         expect(res.body).to.have.property('ogMetas').empty;
         expect(res.body).to.have.property('twitterMetas').empty;
+    });
+
+    it('2. getMetaData', async (): Promise<void> => {
+        const res: ChaiHttp.Response = await chai.request(exp).get('/expect-notfound');
+
+        // eslint-disable-next-line no-magic-numbers
+        expect(res).to.have.status(200);
+        expect(res.body).to.exist;
+        expect(res.body).to.be.deep.eq({});
     });
 
     it('3. getMetaData', async (): Promise<void> => {
