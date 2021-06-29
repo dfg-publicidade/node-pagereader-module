@@ -17,6 +17,8 @@
     "devDependencies": {
         "@dfgpublicidade/eslint-config": "git+ssh://git@github.com/dfg-publicidade/eslint-config.git",
         "@dfgpublicidade/node-files-module": "git+ssh://git@github.com/dfg-publicidade/node-files-module.git",
+        "@types/debug": "^4.1.5",
+        "@types/express": "^4.17.12",
         "@typescript-eslint/eslint-plugin": "^4.26.1",
         "@typescript-eslint/eslint-plugin-tslint": "^4.26.1",
         "@typescript-eslint/parser": "^4.26.1",
