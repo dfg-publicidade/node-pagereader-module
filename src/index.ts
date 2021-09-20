@@ -1,5 +1,4 @@
 import appDebugger from 'debug';
-import { Request } from 'express';
 import puppeteer, { Browser, Page } from 'puppeteer';
 import MetaData from './interfaces/metaData';
 
@@ -7,8 +6,8 @@ import MetaData from './interfaces/metaData';
 const debug: appDebugger.IDebugger = appDebugger('module:page-reader');
 
 class PageReader {
-    public static async getMetaData(req: Request): Promise<MetaData> {
-        if (!req || !req.protocol || !req.headers.host) {
+    public static async getMetaData(url: string): Promise<MetaData> {
+        if (!url) {
             return Promise.reject(new Error('Invalid request to get data.'));
         }
 
@@ -24,8 +23,6 @@ class PageReader {
         let twitterMetas: any[];
 
         try {
-            const url: string = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
-
             debug(`Searching for: ${url}`);
 
             await page.goto(url);

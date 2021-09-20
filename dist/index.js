@@ -8,8 +8,8 @@ const puppeteer_1 = __importDefault(require("puppeteer"));
 /* Module */
 const debug = debug_1.default('module:page-reader');
 class PageReader {
-    static async getMetaData(req) {
-        if (!req || !req.protocol || !req.headers.host) {
+    static async getMetaData(url) {
+        if (!url) {
             return Promise.reject(new Error('Invalid request to get data.'));
         }
         const browser = await puppeteer_1.default.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
@@ -22,7 +22,6 @@ class PageReader {
         let ogImage;
         let twitterMetas;
         try {
-            const url = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
             debug(`Searching for: ${url}`);
             await page.goto(url);
             debug('Page found. Reading...');
