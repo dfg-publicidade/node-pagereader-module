@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const debug_1 = __importDefault(require("debug"));
 const puppeteer_1 = __importDefault(require("puppeteer"));
 /* Module */
-const debug = debug_1.default('module:page-reader');
+const debug = (0, debug_1.default)('module:page-reader');
 class PageReader {
     static async getMetaData(url) {
         if (!url) {
