@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from 'express';
-import fs from 'fs-extra';
+import fs from 'fs/promises';
 import http from 'http';
 
 const exp: Express = express();
@@ -14,7 +14,7 @@ exp.get('/with-meta', async (req: Request, res: Response): Promise<void> => {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': 'text/html'
     });
-    res.write(fs.readFileSync(__dirname + '/with-meta.html', 'utf-8'));
+    res.write(await fs.readFile(__dirname + '/with-meta.html', 'utf-8'));
     res.end();
 });
 
@@ -23,7 +23,7 @@ exp.get('/without-meta', async (req: Request, res: Response): Promise<void> => {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': 'text/html'
     });
-    res.write(fs.readFileSync(__dirname + '/without-meta.html', 'utf-8'));
+    res.write(await fs.readFile(__dirname + '/without-meta.html', 'utf-8'));
     res.end();
 });
 

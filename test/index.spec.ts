@@ -26,45 +26,21 @@ describe('index.ts', (): void => {
         httpServer = http.createServer(exp);
 
         exp.get('/expect-success', async (req: Request, res: Response): Promise<void> => {
-            const metaData: MetaData = await PageReader.getMetaData({
-                ...req,
-                protocol: 'http',
-                headers: {
-                    ...req.headers,
-                    host: 'localhost:3000'
-                },
-                originalUrl: '/with-meta'
-            } as Request);
+            const metaData: MetaData = await PageReader.getMetaData('http://localhost:3000/with-meta');
 
             res.json(metaData);
             res.end();
         });
 
         exp.get('/expect-fail', async (req: Request, res: Response): Promise<void> => {
-            const metaData: MetaData = await PageReader.getMetaData({
-                ...req,
-                protocol: 'http',
-                headers: {
-                    ...req.headers,
-                    host: 'localhost:3000'
-                },
-                originalUrl: '/without-meta'
-            } as Request);
+            const metaData: MetaData = await PageReader.getMetaData('http://localhost:3000/without-meta');
 
             res.json(metaData);
             res.end();
         });
 
         exp.get('/expect-notfound', async (req: Request, res: Response): Promise<void> => {
-            const metaData: MetaData = await PageReader.getMetaData({
-                ...req,
-                protocol: 'http',
-                headers: {
-                    ...req.headers,
-                    host: 'localhost:4000'
-                },
-                originalUrl: '/without-meta'
-            } as Request);
+            const metaData: MetaData = await PageReader.getMetaData('http://localhost:4000/not-found');
 
             res.json(metaData);
             res.end();
